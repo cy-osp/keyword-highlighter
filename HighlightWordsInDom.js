@@ -42,6 +42,10 @@ export default class HighlightWordsInDom {
 		return tempContainerDom.innerHTML;
 	}
 
+	#escapeRegExp(string) {
+		return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
+	}
+	
 	/*
 		完整高亮
 			1、完全包含，考虑有多个匹配
@@ -81,7 +85,7 @@ export default class HighlightWordsInDom {
 				}
 			}
 		}else{
-			const regex = new RegExp(highlightWord, 'g');
+			const regex = new RegExp(this.#escapeRegExp(highlightWord), 'g');
 			let match,configList = [];
 			while ((match = regex.exec(textContent)) !== null) {
 				configList.push({
@@ -140,7 +144,8 @@ export default class HighlightWordsInDom {
 				highlightWords.push(word);
 			}
 		}
-		return highlightWords;
+		
+		return [...new Set(highlightWords)];
 	}
 
 	#getTextNodesFromTextLayer(domNode) {
