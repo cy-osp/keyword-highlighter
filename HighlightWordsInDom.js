@@ -4,6 +4,7 @@ export default class HighlightWordsInDom {
 		let textNodes = this.#getTextNodesFromTextLayer(containerDom);
 		const tempContainerDom = document.createElement('div');
 		const highlightWords = this.#getHighlightWords(containerDom,highlightList);
+		
 		const nLen = textNodes.length;
 		for(let i=0;i<highlightWords.length;i++){
 			const word = highlightWords[i];
@@ -147,15 +148,31 @@ export default class HighlightWordsInDom {
 		
 		return [...new Set(highlightWords)];
 	}
-
+	#findFirstNonTagSpace(currentHTML){
+		let inTag = false;
+    for (let i = 0; i < currentHTML.length; i++) {
+			if (currentHTML[i] === '<') {
+				inTag = true;
+			} else if (currentHTML[i] === '>') {
+				inTag = false;
+			} else if (!inTag && currentHTML[i] === ' ') {
+				// 找到了第一个不在标签内的空格
+				return i;
+			}
+    }
+    // 如果没有找到符合条件的空格
+    return -1;
+	}
 	#getTextNodesFromTextLayer(domNode) {
 		const result = []; // 存储结果
 		let currentHTML = domNode.innerHTML; // 当前处理的innerHTML
+		const that = this;
 		// 递归遍历DOM节点
 		function traverse(node) {
 			if (node.nodeType === Node.TEXT_NODE) { // 如果是文本节点
 				const textContent = node.textContent; // 获取文案
-				const startIndex = currentHTML.indexOf(textContent); // 获取文案在innerHTML中的起始位置
+				
+				const startIndex = textContent === ' ' ? that.#findFirstNonTagSpace(currentHTML): currentHTML.indexOf(textContent);
 				const endIndex = startIndex + textContent.length; // 获取文案在innerHTML中的结束位置
 				// 记录文案及其前后部分
 				result.push({
