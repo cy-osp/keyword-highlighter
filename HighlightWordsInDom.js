@@ -148,21 +148,22 @@ export default class HighlightWordsInDom {
 		
 		return [...new Set(highlightWords)];
 	}
-	#findFirstNonTagSpace(currentHTML){
-		let inTag = false;
-    for (let i = 0; i < currentHTML.length; i++) {
-			if (currentHTML[i] === '<') {
-				inTag = true;
-			} else if (currentHTML[i] === '>') {
-				inTag = false;
-			} else if (!inTag && currentHTML[i] === ' ') {
-				// 找到了第一个不在标签内的空格
-				return i;
-			}
+	
+    #getTextContentIdx(currentHTML,textContent){
+        let n = 0,i = 0;
+        while(i < currentHTML.length){
+            const str = currentHTML[i];
+            if(str === '<'){
+                n += 1;
+            }else if(str === '>'){
+                n -= 1;
+            }else if(n === 0 ){
+                return i;
+            }
+
+            i++;
+        }
     }
-    // 如果没有找到符合条件的空格
-    return -1;
-	}
 	#getTextNodesFromTextLayer(domNode) {
 		const result = []; // 存储结果
 		let currentHTML = domNode.innerHTML; // 当前处理的innerHTML
@@ -172,7 +173,7 @@ export default class HighlightWordsInDom {
 			if (node.nodeType === Node.TEXT_NODE) { // 如果是文本节点
 				const textContent = node.textContent; // 获取文案
 				
-				const startIndex = textContent === ' ' ? that.#findFirstNonTagSpace(currentHTML): currentHTML.indexOf(textContent);
+				const startIndex = that.#getTextContentIdx(currentHTML);
 				const endIndex = startIndex + textContent.length; // 获取文案在innerHTML中的结束位置
 				// 记录文案及其前后部分
 				result.push({
