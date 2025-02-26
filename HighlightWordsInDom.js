@@ -1,6 +1,7 @@
 export default class HighlightWordsInDom {
 
 	getHighlightInnerHTML(containerDom,highlightList){
+        if((highlightList ||[]).length === 0) return;
 		let textNodes = this.#getTextNodesFromTextLayer(containerDom);
 		const tempContainerDom = document.createElement('div');
 		const highlightWords = this.#getHighlightWords(containerDom,highlightList);
