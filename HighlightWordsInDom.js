@@ -1,7 +1,7 @@
 export default class HighlightWordsInDom {
 
 	getHighlightInnerHTML(containerDom,highlightList){
-        if((highlightList ||[]).length === 0) return;
+        if((highlightList || []).length === 0) return;
 		let textNodes = this.#getTextNodesFromTextLayer(containerDom);
 		const tempContainerDom = document.createElement('div');
 		const highlightWords = this.#getHighlightWords(containerDom,highlightList);
@@ -149,32 +149,36 @@ export default class HighlightWordsInDom {
 		
 		return [...new Set(highlightWords)];
 	}
-	
-    #getTextContentIdx(currentHTML,textContent){
-        let n = 0,i = 0;
-        while(i < currentHTML.length){
-            const str = currentHTML[i];
-            if(str === '<'){
-                n += 1;
-            }else if(str === '>'){
-                n -= 1;
-            }else if(n === 0 ){
-                return i;
-            }
-
-            i++;
-        }
+	#findFirstNonTagSpace(currentHTML){
+		let inTag = false;
+    for (let i = 0; i < currentHTML.length; i++) {
+			if (currentHTML[i] === '<') {
+				inTag = true;
+			} else if (currentHTML[i] === '>') {
+				inTag = false;
+			} else if (!inTag && currentHTML[i] === ' ') {
+				// 找到了第一个不在标签内的空格
+				return i;
+			}
     }
+    // 如果没有找到符合条件的空格
+    return -1;
+	}
 	#getTextNodesFromTextLayer(domNode) {
 		const result = []; // 存储结果
 		let currentHTML = domNode.innerHTML; // 当前处理的innerHTML
+
+		// 利用textarea的 DOM 解析能力自动解码实体字符，否则实体字符与textContent 之间存在差异
+		const textarea = document.createElement('textarea');
+		textarea.innerHTML = currentHTML;
+		currentHTML = textarea.value;
 		const that = this;
 		// 递归遍历DOM节点
 		function traverse(node) {
 			if (node.nodeType === Node.TEXT_NODE) { // 如果是文本节点
 				const textContent = node.textContent; // 获取文案
 				
-				const startIndex = that.#getTextContentIdx(currentHTML);
+				const startIndex = textContent === ' ' ? that.#findFirstNonTagSpace(currentHTML): currentHTML.indexOf(textContent);
 				const endIndex = startIndex + textContent.length; // 获取文案在innerHTML中的结束位置
 				// 记录文案及其前后部分
 				result.push({
