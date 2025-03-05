@@ -6,8 +6,11 @@ export default class HighlightWordsInPdf {
 		const canvas = pageDom.querySelector('.canvasWrapper').firstChild;
 		const canvasContext = canvas.getContext('2d');
 		const highlightWordList = this.#getHighlightWords(textDom, highlightList);
-		this.#nodeTextList = this.#getNodeTextList(textDom, []);
-		const positionList = this.#getHighlightWordPosition(textDom, highlightWordList);
+		const { list,pureText } = this.#getNodeTextListAndPureText(textDom, [],'');
+		this.#nodeTextList = list;
+		
+		const positionList = this.#getHighlightWordPosition(pureText, highlightWordList);
+		
 		positionList.forEach(item => {
 			const range = this.#getRangeByPosition(item);
 			if (range) {
@@ -29,9 +32,8 @@ export default class HighlightWordsInPdf {
 	#escapeRegExp(string) {
 		return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
 	}
-	#getHighlightWordPosition(textDom, highlightWordList) {
+	#getHighlightWordPosition(innerText, highlightWordList) {
 		let position = [];
-		const innerText = textDom.innerText.replace(/(\s)/g, '');
 		highlightWordList.forEach(str => {
 			const regex = new RegExp(this.#escapeRegExp(str), 'g');
 			let match;
@@ -43,11 +45,12 @@ export default class HighlightWordsInPdf {
 				regex.lastIndex = match.index + 1;
 			}
 		})
+		
 		return position;
 	}
 	#getHighlightWords(containerDom, highlightList) {
 		let highlightWords = [];
-		const innerText = containerDom.innerText.replace(/\n/g, '').replace(/\t/g, '');
+		const innerText = containerDom.innerText.replace(/(\t|\n)/g,'');
 		for (let i = 0; i < highlightList.length; i++) {
 			const { word, isReg, reg } = highlightList[i];
 			if (isReg) {
@@ -64,18 +67,20 @@ export default class HighlightWordsInPdf {
 	}
 
 	// 生成自上而下的node节点和text的关系图谱
-	#getNodeTextList(node, list) {
+	#getNodeTextListAndPureText(node, list,pureText) {
 		if (node.childNodes.length > 0) {
 			node.childNodes.forEach(childNode => {
-				const childList = this.#getNodeTextList(childNode, []);
-				list = list.concat(childList);
+				const childRes = this.#getNodeTextListAndPureText(childNode, [],'');
+				list = list.concat(childRes.list);
+				pureText += childRes.pureText;
 			})
 		} else if (!/^\s+$/.test(node.nodeValue || '')) {//去除空白文本的影响
 			const allText = node.textContent || '';
 			const text = allText.replace(/(\t|\n)/g, '');
+			pureText += text;
 			list.push({ node, text, allText });
 		}
-		return list;
+		return { list,pureText };
 	}
 
 	#getRangeByPosition(position) {
@@ -84,7 +89,7 @@ export default class HighlightWordsInPdf {
 		let anchorNode, focusNode, anchorOffset, focusOffset, temp;
 		let len = 0, i = 0, _len = 0, allLen = 0, emptyIndex = 0;
 
-		while (len <= endIndex) {
+		while (len <= endIndex && i < nodeTextList.length) {
 			temp = nodeTextList[i];
 			allLen = (temp.node.textContent || '').length;
 			len += temp.text.length;
@@ -99,17 +104,26 @@ export default class HighlightWordsInPdf {
 				focusNode = temp.node;
 				emptyIndex = (temp.node.textContent || '').indexOf(temp.text);
 				focusOffset = endIndex - (len - temp.text.length) + emptyIndex;
+			} else if(endIndex === len && i === nodeTextList.length-1){
+				focusNode = temp.node;
+				emptyIndex = (temp.node.textContent || '').indexOf(temp.text);
+				focusOffset = endIndex - (len - temp.text.length) + emptyIndex;
 			}
 			i++;
 		}
-		console.log(anchorNode, anchorOffset, focusNode, focusOffset)
+		
 		return this.#getRange(anchorNode, anchorOffset, focusNode, focusOffset);
 	}
 
 	#getRange(anchorNode, anchorOffset, focusNode, focusOffset) {
-		const range = new Range();
-		range.setStart(anchorNode, anchorOffset);
-		range.setEnd(focusNode, focusOffset);
-		return range;
+		try {
+			const range = new Range();
+			range.setStart(anchorNode, anchorOffset);
+			range.setEnd(focusNode, focusOffset);
+			return range;
+		} catch (error) {
+			console.log(error);
+		}
+		
 	}
 }
