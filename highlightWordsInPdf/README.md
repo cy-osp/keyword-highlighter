@@ -37,9 +37,9 @@ const highlighter = new HighlightWordsInPdf();
 highlighter.setPageDomHighlight(pdfPageDom, highlightList);
 ```
 
-### 在 PDF.js 中的集成示例
+### 在 PDF.js 中的集成示例（伪代码）
 
-如果你的项目使用 PDF.js 加载 PDF 文件，可以在 `renderTextLayer` 之后调用 `HighlightWordsInPdf` 进行高亮：
+如果你的项目使用 PDF.js 加载 PDF 文件，任意的渲染方法，在 textLayer 之后调用 `HighlightWordsInPdf` 进行高亮即可：
 
 ```javascript
 pdfjsLib.getDocument('example.pdf').promise.then(pdf => {
@@ -75,9 +75,13 @@ pdfjsLib.getDocument('example.pdf').promise.then(pdf => {
 
 ### `setPageDomHighlight(pageDom, highlightList)`
 
-- **参数**：
+- 参数
+
+  ：
+
   - `pageDom`：PDF 页面对应的 DOM 元素。
   - `highlightList`：关键词列表，可以是字符串或正则表达式。
+
 - **功能**：在 PDF 页面上高亮指定关键词。
 
 ### 私有方法（内部实现）
@@ -107,4 +111,3 @@ pdfjsLib.getDocument('example.pdf').promise.then(pdf => {
 ## 许可证
 
 MIT License
-
