@@ -1,5 +1,5 @@
 {
-  "name": "keyword-highlight",
+  "name": "text-keyword-highlighter",
   "version": "1.0.0",
   "description": "Highlight keywords in HTML DOM and PDF.js-rendered PDF pages, even across tags and text nodes. Regex support, multi-keyword, zero dependencies.",
   "type": "module",

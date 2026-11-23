@@ -23,16 +23,16 @@ The killer feature: **cross-tag matching**. Search terms like `JavaScript` split
 ## Install
 
 ```bash
-npm install keyword-highlight
+npm install text-keyword-highlighter
 ```
 
 Or copy the folder you need into your project — there are no runtime dependencies:
 
 ```javascript
-import { HighlightWordsInDom, HighlightWordsInPdf } from 'keyword-highlight';
+import { HighlightWordsInDom, HighlightWordsInPdf } from 'text-keyword-highlighter';
 // or individually:
-import HighlightWordsInDom from 'keyword-highlight/html';
-import HighlightWordsInPdf from 'keyword-highlight/pdf';
+import HighlightWordsInDom from 'text-keyword-highlighter/html';
+import HighlightWordsInPdf from 'text-keyword-highlighter/pdf';
 ```
 
 ## Usage — highlight keywords in HTML
