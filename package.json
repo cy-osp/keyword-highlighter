@@ -1,0 +1,49 @@
+{
+  "name": "keyword-highlight",
+  "version": "1.0.0",
+  "description": "Highlight keywords in HTML DOM and PDF.js-rendered PDF pages, even across tags and text nodes. Regex support, multi-keyword, zero dependencies.",
+  "type": "module",
+  "main": "index.js",
+  "exports": {
+    ".": "./index.js",
+    "./html": "./highlightWordsInHtml/index.js",
+    "./pdf": "./highlightWordsInPdf/index.js"
+  },
+  "files": [
+    "index.js",
+    "highlightWordsInHtml/",
+    "highlightWordsInPdf/",
+    "README.md",
+    "LICENSE"
+  ],
+  "keywords": [
+    "highlight",
+    "highlighter",
+    "keywords",
+    "text-highlighting",
+    "search-highlight",
+    "pdfjs",
+    "pdf-viewer",
+    "dom",
+    "markjs-alternative",
+    "zero-dependency"
+  ],
+  "author": "yixiaocao33 <yidashi33@126.com>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cy-osp/keyword-highlighter.git"
+  },
+  "bugs": {
+    "url": "https://github.com/cy-osp/keyword-highlighter/issues"
+  },
+  "homepage": "https://github.com/cy-osp/keyword-highlighter#readme",
+  "sideEffects": false,
+  "scripts": {
+    "test": "vitest run"
+  },
+  "devDependencies": {
+    "jsdom": "^25.0.0",
+    "vitest": "^2.1.0"
+  }
+}

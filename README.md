@@ -1,5 +1,7 @@
 # Keyword Highlighter
 
+[![CI](https://github.com/cy-osp/keyword-highlighter/actions/workflows/ci.yml/badge.svg)](https://github.com/cy-osp/keyword-highlighter/actions/workflows/ci.yml)
+
 Highlight keywords in **HTML DOM** and in **PDF.js-rendered PDF** pages — even when the keyword is split across multiple tags or text nodes.
 
 **Keyword Highlighter** is a dependency-free JavaScript library with two ES6 classes:
@@ -20,11 +22,17 @@ The killer feature: **cross-tag matching**. Search terms like `JavaScript` split
 
 ## Install
 
-Copy the folder you need into your project:
+```bash
+npm install keyword-highlight
+```
+
+Or copy the folder you need into your project — there are no runtime dependencies:
 
 ```javascript
-import HighlightWordsInDom from './highlightWordsInHtml/index.js';
-import HighlightWordsInPdf from './highlightWordsInPdf/index.js';
+import { HighlightWordsInDom, HighlightWordsInPdf } from 'keyword-highlight';
+// or individually:
+import HighlightWordsInDom from 'keyword-highlight/html';
+import HighlightWordsInPdf from 'keyword-highlight/pdf';
 ```
 
 ## Usage — highlight keywords in HTML
@@ -41,10 +49,10 @@ const highlighter = new HighlightWordsInDom();
 containerDom.innerHTML = highlighter.getHighlightInnerHTML(containerDom, highlightList);
 ```
 
-Matched text is wrapped in `<i class="red-highlight">…</i>` — style it however you like:
+Matched text is wrapped in `<i class="red-highlight">…</i>` by default — pass `options.highlightClass` to customize it:
 
-```css
-.red-highlight { color: #fff; background: #e74c3c; font-style: normal; }
+```javascript
+highlighter.getHighlightInnerHTML(containerDom, highlightList, { highlightClass: 'my-mark' });
 ```
 
 ## Usage — highlight keywords in PDF.js pages
@@ -80,7 +88,16 @@ Returns the processed `innerHTML` string.
 | `pageDom`     | `Element`   | PDF page container with `.textLayer` and `.canvasWrapper` children. |
 | `highlightList`| `Array`   | Same item format as above.                                         |
 
-Draws highlights directly onto the canvas.
+Draws highlights directly onto the canvas. Pass `options.color` to change the highlight color (default `rgba(255, 0, 0, 0.5)`), and call `highlighter.clear(pageDom)` to remove all highlights. Re-apply highlights after every PDF.js re-render (zoom, resize), since re-rendering repaints the canvas.
+
+## Development
+
+```bash
+npm install
+npm test        # runs vitest (jsdom)
+```
+
+CI runs the test suite on Node 18 & 20 for every push via GitHub Actions.
 
 ## Browser support
 
